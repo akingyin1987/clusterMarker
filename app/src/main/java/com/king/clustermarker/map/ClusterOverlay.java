@@ -157,14 +157,16 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 	private void addSingleClusterToMap(Cluster cluster) {
 		LatLng latlng = cluster.getCenterLatLng();
 //        TextOptions   textOptions = new TextOptions();
-//        textOptions.position(latlng);
+//       textOptions.position(latlng);
+//        textOptions.fontSize(50);
+//        textOptions.bgColor( Color.argb(159, 210, 154, 6));
 //        textOptions.text(String.valueOf(cluster.getClusterCount()));
 
 		MarkerOptions markerOptions = new MarkerOptions();
 
 		markerOptions.anchor(0.5f, 0.5f)
 				.icon(getBitmapDes(cluster.getClusterCount())).position(latlng);
-      //  Marker  marker = (Marker)bdMap.addOverlay(markerOptions);
+        Marker  marker = (Marker)bdMap.addOverlay(markerOptions);
         manager.addOverlay(markerOptions);
 		cluster.setOverlayOptions(markerOptions);
 		//cluster.setMarker(marker);
@@ -201,6 +203,11 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 	private void updateCluster(Cluster cluster) {
         MarkerOptions   overlayOptions =(MarkerOptions) cluster.getMoverlayOptions();
 		overlayOptions.icon(getBitmapDes(cluster.getClusterCount()));
+//        TextOptions   textOptions = (TextOptions)cluster.getMoverlayOptions();
+//        textOptions.text(String.valueOf(cluster.getClusterCount()));
+//        textOptions.fontSize(50);
+//
+//        textOptions.bgColor( Color.argb(159, 210, 154, 6));
 	}
 
 	/**
