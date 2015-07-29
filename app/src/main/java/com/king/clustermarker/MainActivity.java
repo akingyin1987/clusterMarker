@@ -21,7 +21,11 @@ import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.Overlay;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.overlayutil.OverlayManager;
 import com.king.clustermarker.map.ClusterClickListener;
 import com.king.clustermarker.map.ClusterItem;
 import com.king.clustermarker.map.ClusterOverlay;
@@ -42,6 +46,8 @@ public class MainActivity extends Activity  implements BaiduMap.OnMapLoadedCallb
     private int clusterRadius = 80;
 
     public    Drawable   drawable,drawable1,drawable2,drawable3;
+
+    public    MyManager   manager ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,29 +73,77 @@ public class MainActivity extends Activity  implements BaiduMap.OnMapLoadedCallb
 
 
     public   static    int  minlat = (int) (39.780000 * 1E6);
-    public   static    int  maxlat = (int) (116.220000 * 1E6);
+    public   static    int  minlng = (int) (116.220000 * 1E6);
     public   static    int  Interval = 370000;
 
+
+    public    class   MyManager  extends OverlayManager{
+
+        private   List<OverlayOptions>  overlayOptionsList;
+
+        public MyManager(BaiduMap baiduMap) {
+            super(baiduMap);
+            overlayOptionsList = new ArrayList<>();
+        }
+
+        public   void   addOverlay(OverlayOptions   overlayOptions){
+            overlayOptionsList.add(overlayOptions);
+        }
+
+        public  void   removeOverlay(OverlayOptions  overlayOptions){
+            overlayOptionsList.remove(overlayOptions);
+        }
+
+        public  void   clean(){
+            overlayOptionsList.clear();
+        }
+
+        public   MyManager (BaiduMap  baiduMap,List<OverlayOptions>  overlayOptions){
+            super(baiduMap);
+            this.overlayOptionsList = new ArrayList<>();
+            this.overlayOptionsList.addAll(overlayOptions);
+        }
+
+        @Override
+        public List<OverlayOptions> getOverlayOptions() {
+            return overlayOptionsList;
+        }
+
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            System.out.println("marker="+marker.getTitle());
+            return false;
+        }
+
+        @Override
+        public boolean onPolylineClick(Polyline polyline) {
+            return false;
+        }
+    }
 
 
 
     @Override
     public void onMapLoaded() {
          System.out.println("onMapLoaded");
-        ClusterOverlay  clusterOverlay = new ClusterOverlay(baiduMap,clusterRadius,this);
-        clusterOverlay.setClusterRenderer(this);
-        clusterOverlay.setOnClusterClickListener(this);
-
+        manager = new MyManager(baiduMap);
+        baiduMap.setOnMarkerClickListener(manager);
+        manager.addToMap();
+        List<ClusterItem>   regionItems = new ArrayList<>();
         Random r = new  Random();
-        for(int i=0 ; i<200;i++){
+        for(int i=0 ; i<2000;i++){
 
             int rlat = r.nextInt(Interval);
             int rlng = r.nextInt(Interval);
             int lat = minlat + rlat;
-            int lng = minlat + rlng;
+            int lng = minlng + rlng;
+            System.out.println("lat="+lat+":"+lng);
             RegionItem   item = new RegionItem(new LatLng(lat/1E6,lng/1E6),"i"+i);
-            clusterOverlay.addClusterItem(item);
+           regionItems.add(item);
         }
+        ClusterOverlay  clusterOverlay = new ClusterOverlay(baiduMap,regionItems,manager,clusterRadius,this);
+        clusterOverlay.setClusterRenderer(this);
+        clusterOverlay.setOnClusterClickListener(this);
     }
 
 
