@@ -2,12 +2,11 @@ package com.king.clustermarker.map;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.content.Context;
-import android.graphics.BitmapRegionDecoder;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Handler;
@@ -28,6 +27,7 @@ import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.king.clustermarker.MainActivity;
 import com.king.clustermarker.R;
 
@@ -50,29 +50,32 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 	private ClusterClickListener mClusterClickListener;
 	private ClusterRender mClusterRender;
     private LatLngBounds   bounds;
+    private LatLng  centerLatLng;
+
 
 	private MainActivity.MyManager   manager;
 	private Handler handler = new Handler() {
 		public void handleMessage(Message message) {
+
+            System.out.println("加载到MAP");
 			addClusterToMap();
 		}
 	};
 
 	/**
-	 * 构造函数
+	 *
 	 * 
 	 * @param bdMap
 	 * @param clusterSize
-	 *            聚合范围的大小（指点像素单位距离内的点会聚合到一个点显示）
+	 *            聚合范围的大小
 	 * @param context
 	 */
 	public ClusterOverlay(BaiduMap bdMap,MainActivity.MyManager manager, int clusterSize, Context context) {
-		this(bdMap, null,manager, clusterSize, context);
+		this(bdMap, null, manager, clusterSize, context);
 
 	}
 
 	/**
-	 * 构造函数
 	 * 
 	 * @param bdMap
 	 * @param clusterItems
@@ -97,6 +100,8 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 		mProjection = this.bdMap.getProjection();
 		mClusterSize = clusterSize;
 		executor = Executors.newFixedThreadPool(2);
+        bounds = bdMap.getMapStatus().bound;
+
 		assignClusters();
 		 
 	}
@@ -133,11 +138,14 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
  * 将聚合元素添加至地图上
  * */
 	private void addClusterToMap() {
+
 		manager.clean();
 		manager.removeFromMap();
+
 		for (Cluster cluster : mClusters) {
 			addSingleClusterToMap(cluster);
 		}
+        System.out.println(manager.getOverlayOptions().size() + "===size");
         manager.addToMap();
         //manager.zoomToSpan();
 	}
@@ -156,7 +164,7 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 
 		markerOptions.anchor(0.5f, 0.5f)
 				.icon(getBitmapDes(cluster.getClusterCount())).position(latlng);
-        Marker  marker = (Marker)bdMap.addOverlay(markerOptions);
+      //  Marker  marker = (Marker)bdMap.addOverlay(markerOptions);
         manager.addOverlay(markerOptions);
 		cluster.setOverlayOptions(markerOptions);
 		//cluster.setMarker(marker);
@@ -171,14 +179,15 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 	private BitmapDescriptor getBitmapDes(int num) {
 
            TextView  textView = new TextView(mContext);
-            if (num > 1) {
+
                 String tile = String.valueOf(num);
                 textView.setText(tile);
-            }
+
             textView.setGravity(Gravity.CENTER);
 
             textView.setTextColor(Color.BLACK);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
             if (mClusterRender != null && mClusterRender.getDrawAble(num) != null) {
                 textView.setBackgroundDrawable(mClusterRender.getDrawAble(num));
             } else {
@@ -203,25 +212,30 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
         }
 		mClusters.clear();
 		executor.submit(new Runnable() {
-
 			@Override
 			public void run() {
-				for (ClusterItem clusterItem : mPoints) {
-					LatLng latlng = clusterItem.getPosition();
-                    if(bounds.contains(latlng)){
-                        Point point = mProjection.toScreenLocation(latlng);
-                        Cluster cluster = getCluster(point);
-                        if (cluster != null) {
-                            cluster.addClusterItem(clusterItem);
-                        } else {
-                            cluster = new Cluster(point, latlng);
-                            mClusters.add(cluster);
-                            cluster.addClusterItem(clusterItem);
+                try {
+                    for (ClusterItem clusterItem : mPoints) {
+                        LatLng latlng = clusterItem.getPosition();
+                        if (bounds.contains(latlng)) {
+                            Point point = mProjection.toScreenLocation(latlng);
+                            Cluster cluster = getCluster(point);
+                            if (cluster != null) {
+                                cluster.addClusterItem(clusterItem);
+                            } else {
+                                cluster = new Cluster(point, latlng);
+                                mClusters.add(cluster);
+                                cluster.addClusterItem(clusterItem);
+                            }
                         }
                     }
+                    System.out.println("发送消息"+(null == handler));
+                    handler.sendEmptyMessage(0);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                System.out.println("size=33333===" + mPoints.size());
 
-				}
-				handler.sendEmptyMessage(0);
 			}
 		});
 
@@ -255,7 +269,9 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 		for (Cluster cluster : mClusters) {
 			Point poi = cluster.getCenterPoint();
 			double distance = getDistanceBetweenTwoPoints(point.x, point.y,
-					poi.x, poi.y);
+                    poi.x, poi.y);
+
+
 			if (distance < mClusterSize) {
 				return cluster;
 			}
@@ -277,6 +293,10 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 		double distance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2)
 				* (y1 - y2));
 		return distance;
+	}
+
+	public  double getDistanceBetweenTwoPoints(LatLng   l1,LatLng l2){
+		return DistanceUtil.getDistance(l1,l2);
 	}
 
 
@@ -310,11 +330,22 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
     public void onMapStatusChangeFinish(MapStatus mapStatus) {
         //放大缩小完成后对聚合点进行重新计算
         float leveltemp = mapStatus.zoom;
-        System.out.println("zoom="+leveltemp);
+
         if (leveltemp != level) {
             bounds =  mapStatus.bound;
             assignClusters();
             level = leveltemp;
+            centerLatLng = mapStatus.bound.getCenter();
+        }else{
+            bounds =  mapStatus.bound;
+            //当缩放等级不变的时候，看中心点是否发生变化
+            if(null == centerLatLng){
+                assignClusters();
+            }else if(centerLatLng.latitude != bounds.getCenter().latitude ||
+                    centerLatLng.longitude != bounds.getCenter().longitude){
+                assignClusters();
+            }
+            centerLatLng = bounds.getCenter();
         }
     }
 

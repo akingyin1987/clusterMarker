@@ -131,17 +131,17 @@ public class MainActivity extends Activity  implements BaiduMap.OnMapLoadedCallb
         manager.addToMap();
         List<ClusterItem>   regionItems = new ArrayList<>();
         Random r = new  Random();
-        for(int i=0 ; i<2000;i++){
+        for(int i=0 ; i<4000;i++){
 
             int rlat = r.nextInt(Interval);
             int rlng = r.nextInt(Interval);
             int lat = minlat + rlat;
             int lng = minlng + rlng;
-            System.out.println("lat="+lat+":"+lng);
+
             RegionItem   item = new RegionItem(new LatLng(lat/1E6,lng/1E6),"i"+i);
            regionItems.add(item);
         }
-        ClusterOverlay  clusterOverlay = new ClusterOverlay(baiduMap,regionItems,manager,clusterRadius,this);
+        ClusterOverlay  clusterOverlay = new ClusterOverlay(baiduMap,regionItems,manager, dp2px(getApplicationContext(), clusterRadius),this);
         clusterOverlay.setClusterRenderer(this);
         clusterOverlay.setOnClusterClickListener(this);
     }
