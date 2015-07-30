@@ -39,6 +39,7 @@ import com.king.clustermarker.map.ClusterItem;
 import com.king.clustermarker.map.ClusterOverlay;
 import com.king.clustermarker.map.ClusterRender;
 
+import com.king.clustermarker.map.RegionItem;
 import com.king.clustermarker.map.onLoadFinish;
 
 import java.util.ArrayList;
@@ -170,7 +171,6 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
                 }
                 countloc = regionItemList.size();
 
-                ToMarkers(MapStatusModel.ALL);
 
             } else if (msg.what == -1) {
                 hideDialog();
@@ -207,27 +207,27 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
                         mapStatusModel = MapStatusModel.ALL;
                         manager.removeFromMap();
                         manager.removeAll();
-                        //   ToMarkers(mapStatusModel);
+                          ToMarkers(mapStatusModel);
                     } else if (checkedId == R.id.rb_finished) {
                         manager.removeFromMap();
                         manager.removeAll();
                         mapStatusModel = MapStatusModel.FINISHED;
-                        //  ToMarkers(mapStatusModel);
+                        ToMarkers(mapStatusModel);
                     } else if (checkedId == R.id.rb_last) {
                         manager.removeFromMap();
                         manager.removeAll();
                         mapStatusModel = MapStatusModel.LAST;
-                        //   ToMarkers(mapStatusModel);
+                           ToMarkers(mapStatusModel);
                     } else if (checkedId == R.id.rb_unfinsh) {
                         manager.removeFromMap();
                         manager.removeAll();
                         mapStatusModel = MapStatusModel.UNFINISH;
-                        //    ToMarkers(mapStatusModel);
+                            ToMarkers(mapStatusModel);
                     } else if (checkedId == R.id.rb_uploaded) {
                         manager.removeFromMap();
                         manager.removeAll();
                         mapStatusModel = MapStatusModel.UPLOADED;
-                        //   ToMarkers(mapStatusModel);
+                          ToMarkers(mapStatusModel);
                     }
 
                 }
@@ -485,7 +485,23 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
     }
 
     public  void  ToMarkers(MapStatusModel mapStatusModel){
+        showLoadDialog(null);
+         regionItemList.clear();
 
+         for(BdModel  bdModel : markers){
+
+             if(mapStatusModel == MapStatusModel.ALL ||
+                     bdModel.getMapStatus(0) == mapStatusModel){
+
+                 RegionItem   item = new RegionItem(new LatLng(bdModel.bdlat,bdModel.bdlng),"i222",bdModel);
+                 regionItemList.add(item);
+             }
+         }
+        countloc = regionItemList.size();
+        System.out.println("size==="+regionItemList.size());
+        clusterOverlay.addAllClusterItems(regionItemList);
+
+        clusterOverlay.assignClusters();
     }
 
     @Override

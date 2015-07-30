@@ -40,9 +40,9 @@ public class TestBaiduMap  extends AbstractBaiduMapBrowseActivity  {
                 meter.isLast = true;
             }
             meter.bdlat = lat/1E6;
-            meter.bdlng = lat/1E6;
+            meter.bdlng = lng/1E6;
             markers.add(meter);
-            RegionItem   item = new RegionItem(new LatLng(lat/1E6,lng/1E6),"i"+i,meter);
+            RegionItem   item = new RegionItem(new LatLng(meter.bdlat,meter.bdlng),"i"+i,meter);
             regionItemList.add( item);
         }
 

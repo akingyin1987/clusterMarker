@@ -86,13 +86,14 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
     public ClusterOverlay(BaiduMap bdMap, List<ClusterItem> clusterItems, AbstractBaiduMapBrowseActivity.MyManager manager,
                           int clusterSize, Context context) {
         if (clusterItems != null) {
-            mPoints = clusterItems;
+            mPoints = new ArrayList<>();
+            mPoints.addAll(clusterItems);
         } else {
-            mPoints = new ArrayList<ClusterItem>();
+            mPoints = new ArrayList<>();
         }
         this.manager = manager;
         mContext = context;
-        mClusters = new ArrayList<Cluster>();
+        mClusters = new ArrayList<>();
         this.bdMap = bdMap;
 
         this.bdMap.setOnMapStatusChangeListener(this);
@@ -133,7 +134,10 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 
     public  void  addAllClusterItems(List<ClusterItem>  list){
         mPoints.clear();
+        tempPoints.clear();
+
         mPoints.addAll(list);
+        System.out.println("共==" + mPoints.size());
 
     }
 
@@ -248,8 +252,10 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
             @Override
             public void run() {
                 try {
+
                     for (ClusterItem clusterItem : mPoints) {
                         LatLng latlng = clusterItem.getPosition();
+
                         if (bounds.contains(latlng)) {
                             tempPoints.add(clusterItem);
                         }
