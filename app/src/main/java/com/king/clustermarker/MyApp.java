@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.Toast;
 
+import com.activeandroid.ActiveAndroid;
 import com.baidu.mapapi.SDKInitializer;
 
 /**
@@ -40,6 +41,7 @@ public class MyApp  extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ActiveAndroid.initialize(this,true);
         SDKInitializer.initialize(getApplicationContext());
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(SDKInitializer.SDK_BROADTCAST_ACTION_STRING_PERMISSION_CHECK_ERROR);
@@ -52,5 +54,6 @@ public class MyApp  extends Application {
     public void onTerminate() {
         super.onTerminate();
         unregisterReceiver(mReceiver);
+        ActiveAndroid.dispose();
     }
 }
