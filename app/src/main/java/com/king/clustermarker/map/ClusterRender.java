@@ -2,6 +2,9 @@ package com.king.clustermarker.map;
 
 import android.graphics.drawable.Drawable;
 
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.king.clustermarker.base.baseModel.MapStatusModel;
+
 /**
  * @author yiyi.qi 聚合点的渲染规则
  */
@@ -13,4 +16,6 @@ public interface ClusterRender {
 	 * @return
 	 */
 	public Drawable getDrawAble(int clusterNum);
+
+	public BitmapDescriptor  getBitmapDes(MapStatusModel  mapStatusModel);
 }

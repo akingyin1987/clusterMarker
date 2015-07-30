@@ -1,6 +1,8 @@
 package com.king.clustermarker.base;
 
+import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,19 +11,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import com.activeandroid.ActiveAndroid;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
@@ -31,6 +33,13 @@ import com.baidu.mapapi.utils.DistanceUtil;
 import com.king.clustermarker.R;
 import com.king.clustermarker.base.baseModel.BdModel;
 import com.king.clustermarker.base.baseModel.MapStatusModel;
+import com.king.clustermarker.map.Cluster;
+import com.king.clustermarker.map.ClusterClickListener;
+import com.king.clustermarker.map.ClusterItem;
+import com.king.clustermarker.map.ClusterOverlay;
+import com.king.clustermarker.map.ClusterRender;
+
+import com.king.clustermarker.map.onLoadFinish;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +51,13 @@ import java.util.List;
  * Time: 18:07 
  * FIXME 
  */
-public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivity {
+public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivity implements ClusterRender
+        ,ClusterClickListener ,onLoadFinish{
 
     public List<BdModel> markers = new ArrayList<>();
+
+    public List<ClusterItem>  regionItemList = new ArrayList<>();
+
 
     public List<MapStatusModel> allMarkerOptions = new ArrayList<>();
     public static final String MAP_DATA_KEY = "map_data_key";
@@ -85,6 +98,11 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
     public MapStatusModel mapStatusModel = MapStatusModel.ALL;
 
+    private int clusterRadius = 80;
+
+    public Drawable drawable,drawable1,drawable2,drawable3;
+
+    public    ClusterOverlay clusterOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +115,21 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
         initUi(mainView);
         MapConfigure();
-
+        drawable = getApplication().getResources().getDrawable(
+                R.drawable.m0);
+        drawable1 =getApplication().getResources().getDrawable(
+                R.drawable.m1);
+        drawable2 = getApplication().getResources().getDrawable(
+                R.drawable.m2);
+        drawable3 =getApplication().getResources().getDrawable(
+                R.drawable.m3);
         mBaidumap.setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                clusterOverlay = new ClusterOverlay(mBaidumap,regionItemList,manager, dp2px(getApplicationContext(), clusterRadius),AbstractBaiduMapBrowseActivity.this);
+                clusterOverlay.setClusterRenderer(AbstractBaiduMapBrowseActivity.this);
+                clusterOverlay.setOnLoadFinish(AbstractBaiduMapBrowseActivity.this);
+                clusterOverlay.setOnClusterClickListener(AbstractBaiduMapBrowseActivity.this);
 
             }
         });
@@ -111,13 +140,13 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
             public void run() {
 
                 super.run();
-                initData(markers);
+                initData(markers,regionItemList);
                 initDataHandler.sendEmptyMessage(1);
             }
 
         }.start();
     }
-
+    public   boolean  loadData = false;
     public Handler initDataHandler = new Handler() {
 
         @Override
@@ -125,13 +154,21 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
             super.handleMessage(msg);
             if (msg.what == 1) {
+                loadData = true;
                 if (null == manager) {
                     manager = new MyManager(mBaidumap);
                     mBaidumap.setOnMarkerClickListener(manager);
                     manager.addToMap();
                 }
+
                 manager.removeFromMap();
                 manager.removeAll();
+                if(null != clusterOverlay){
+                    clusterOverlay.addAllClusterItems(regionItemList);
+                    clusterOverlay.assignClusters();
+
+                }
+                countloc = regionItemList.size();
 
                 ToMarkers(MapStatusModel.ALL);
 
@@ -143,7 +180,7 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
                 hideDialog();
 
-                countinfo.setText("定位总数：" + countloc);
+
 
             } else if (msg.what == 3) {
                 showToast("当前位置无法获取，距离条件无效");
@@ -254,7 +291,7 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
         mBaidumap.setOnMyLocationClickListener(new BaiduMap.OnMyLocationClickListener() {
             @Override
             public boolean onMyLocationClick() {
-                showPopupBottonWindow(null);
+                showPopupBottonWindow(null,null);
                 return false;
             }
         });
@@ -263,7 +300,8 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
     }
 
-    public void showPopupBottonWindow(Marker marker) {
+    public  BitmapDescriptor    clusterDescriptor;
+    public void showPopupBottonWindow(Marker marker,Cluster cluster) {
         if (null != mPopupBottonWindow && mPopupBottonWindow.isShowing()) {
 
             mPopupBottonWindow.dismiss();
@@ -279,6 +317,10 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
             titleTextView.setText("当前位置（精度:" + mBaidumap.getLocationData().accuracy + "米)");
         } else {
             mCurrentMarker = marker;
+
+          if(cluster.getMoverlayOptions() instanceof MarkerOptions){
+              clusterDescriptor = ((MarkerOptions) cluster.getMoverlayOptions()).getIcon();
+          }
             mCurrentMarker.setIcon(readBitmap);
             operationButton.setVisibility(View.VISIBLE);
             closeButton.setVisibility(View.VISIBLE);
@@ -291,7 +333,9 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
                 titleTextView.setText("距当前位置：" + String.format("%.2f", DistanceUtil.getDistance(ll, marker.getPosition())) + "(米)");
             }
             int index = marker.getExtraInfo().getInt("index");
-            infoTextView.setText(Html.fromHtml(markers.get(index).getBdDeviceInfo()));
+
+            String  message = cluster.getClusterCount()==1?cluster.getBdModel().getBdDeviceInfo():"共"+cluster.getClusterCount()+"个";
+            infoTextView.setText(Html.fromHtml(message));
         }
         if (null == mPopupBottonWindow) {
             mPopupBottonWindow = new PopupWindow(this);
@@ -306,28 +350,7 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
                 @Override
                 public void onDismiss() {
                     if (null != mCurrentMarker) {
-                        int index = mCurrentMarker.getExtraInfo().getInt("index");
-                        BdModel marderVo = markers.get(index);
-                        if (marderVo.isLastOperation()) {
-                            mCurrentMarker.setIcon(orangeBitmap);
-                            return;
-                        }
-                        switch (marderVo.getMarkerColor(style)) {
-                            case BLACK:
-                                mCurrentMarker.setIcon(blackBitmap);
-                                break;
-                            case BLUE:
-                                mCurrentMarker.setIcon(blueBitmap);
-                                break;
-                            case GREEN:
-                                mCurrentMarker.setIcon(greenBitmap);
-                                break;
-                            case ORANGE:
-                                mCurrentMarker.setIcon(orangeBitmap);
-                                break;
-                            default:
-                                break;
-                        }
+                        mCurrentMarker.setIcon(clusterDescriptor);
                     }
                 }
             });
@@ -379,7 +402,19 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
         @Override
         public boolean onMarkerClick(Marker marker) {
-            System.out.println("onMarkerClick====" + marker.getTitle());
+           try{
+               Bundle   bundle = marker.getExtraInfo();
+               int  index = bundle.getInt("index");
+               Cluster   cluster = clusterOverlay.getCluster(index);
+               if(null == cluster){
+                   return  false;
+               }
+               showPopupBottonWindow(marker,cluster);
+           }catch (Exception e){
+                 e.printStackTrace();
+           }
+
+
             return false;
         }
 
@@ -407,24 +442,86 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
                 locdata = new MyLocationData.Builder().direction(-1).accuracy(location.getRadius()).latitude(location.getLatitude()).longitude(location.getLongitude()).build();
                 mBaidumap.setMyLocationData(locdata);
 
-                countInfo();
+
             }
 
         }
 
     }
 
+    public Drawable getDrawAble(int clusterNum) {
+        int radius = dp2px(getApplicationContext(), clusterRadius);
+        if (clusterNum == 1) {
+            return  null;
 
-    public void countInfo() {
+        } else if(clusterNum <5){
+            return drawable;
+        }else if (clusterNum < 10) {
+            return  drawable1;
+
+        } else if (clusterNum < 20) {
+            return  drawable2;
+
+        } else {
+            return  drawable3;
+
+        }
+
+    }
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     */
+    public int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
 
 
-        countinfo.setText("定位总数:" + countloc);
+
+    @Override
+    public void onClick(Marker marker, List<ClusterItem> clusterItems) {
+
+    }
+
+    public  void  ToMarkers(MapStatusModel mapStatusModel){
+
+    }
+
+    @Override
+    public BitmapDescriptor getBitmapDes(MapStatusModel mapStatusModel) {
+        switch (mapStatusModel){
+            case FINISHED:
+
+                return   greenBitmap;
+            case  LAST:
+                return  orangeBitmap;
+            case UNFINISH:
+                return   blackBitmap;
+            case UPLOADED:
+                return   blueBitmap;
+
+
+        }
+        return blackBitmap;
+    }
+
+    @Override
+    public void onLoadFinish(int total) {
+        countinfo.setText("定位总数：" + countloc+"    当前显示数:"+total);
+        hideDialog();
+    }
+
+    @Override
+    public void onLoadStart() {
+        System.out.println("onStart");
+        showLoadDialog(null);
     }
 
     // 操作设备
     public abstract void operationDevice(BdModel bdModel);
 
-    public abstract void initData(List<BdModel> markers);
+    public abstract void initData(List<BdModel> markers,List<ClusterItem>  regionItemList);
 
     // 导航
     public abstract void navDevice(BdModel bdModel);

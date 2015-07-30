@@ -2,6 +2,7 @@ package com.king.clustermarker.map;
 
 
 import com.baidu.mapapi.model.LatLng;
+import com.king.clustermarker.base.baseModel.BdModel;
 
 /**
  * @author yiyi.qi 每个聚合元素类的接口
@@ -14,4 +15,6 @@ public interface ClusterItem {
 	 * @return
 	 */
 	public LatLng getPosition();
+
+	public BdModel  getBdModel();
 }

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -26,6 +27,8 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.overlayutil.OverlayManager;
+import com.king.clustermarker.base.AbstractBaiduMapBrowseActivity;
+import com.king.clustermarker.base.baseModel.MapStatusModel;
 import com.king.clustermarker.map.ClusterClickListener;
 import com.king.clustermarker.map.ClusterItem;
 import com.king.clustermarker.map.ClusterOverlay;
@@ -138,12 +141,13 @@ public class MainActivity extends Activity  implements BaiduMap.OnMapLoadedCallb
             int lat = minlat + rlat;
             int lng = minlng + rlng;
 
-            RegionItem   item = new RegionItem(new LatLng(lat/1E6,lng/1E6),"i"+i);
+            RegionItem   item = new RegionItem(new LatLng(lat/1E6,lng/1E6),"i"+i,null);
            regionItems.add(item);
         }
-        ClusterOverlay  clusterOverlay = new ClusterOverlay(baiduMap,regionItems,manager, dp2px(getApplicationContext(), clusterRadius),this);
-        clusterOverlay.setClusterRenderer(this);
-        clusterOverlay.setOnClusterClickListener(this);
+//        ClusterOverlay  clusterOverlay = new ClusterOverlay(baiduMap,regionItems,manager,
+//                dp2px(getApplicationContext(), clusterRadius),this);
+//        clusterOverlay.setClusterRenderer(this);
+//        clusterOverlay.setOnClusterClickListener(this);
     }
 
 
@@ -203,6 +207,11 @@ public class MainActivity extends Activity  implements BaiduMap.OnMapLoadedCallb
             content += item.getTitle() + " ";
         }
         Toast.makeText(this,content,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public BitmapDescriptor getBitmapDes(MapStatusModel mapStatusModel) {
+        return null;
     }
 
     @Override
