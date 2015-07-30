@@ -27,7 +27,7 @@ import java.util.List;
  * Time: 18:07 
  * FIXME 
  */
-public abstract  class AbstractBaiduMapBrowseActivity  {
+public abstract  class AbstractBaiduMapBrowseActivity  extends  BaseBaiduMapActivity{
 
     public List<BdModel> markers = new ArrayList<>();
 
