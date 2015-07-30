@@ -311,4 +311,7 @@
     <color name="text_pulltorefresh">#3EB2DB</color>
     <color name="text_pulltorefresh_lasttime">#C7C7C7</color>
 
+    <color name="gray3">#cccccc</color>
+    <color name="gray2">#eaeaea</color>
+
 </resources>

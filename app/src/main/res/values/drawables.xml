@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="border_color">#ffcccccc</item>
+    <item type="drawable" name="transparent">#00000000</item>
+    <item type="drawable" name="user_center_tool_bg">#ffffffff</item>
+    <item type="drawable" name="user_center_tool_bg_pressed">#ffebf6ff</item>
+   
+    <item type="drawable" name="screen_background_light">#ffffffff</item>
+    <item type="drawable" name="gay_9D9D9D">#9D9D9D</item>
+    <item type="drawable" name="blue_0000E3">#0000E3</item>
+    <item type="drawable" name="read_FF5151">#FF5151</item>
+</resources>

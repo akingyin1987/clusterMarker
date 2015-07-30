@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:layout_alignParentTop="true"
+                  android:id="@+id/mappap_toploay">
+        
+    
+    <RadioGroup
+        android:id="@+id/rg_search"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/gray2"
+        android:orientation="horizontal"
+        android:weightSum="5" >
+
+        <RadioButton
+            android:id="@+id/rb_all"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_checkbox"
+            android:button="@null"
+            android:checked="true"
+            android:gravity="center"
+            android:text="全部"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/gray3" />
+
+        <RadioButton
+            android:id="@+id/rb_finished"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_checkbox"
+            android:button="@null"
+            android:gravity="center"
+            android:text="已完成"
+            android:textSize="14sp" />
+
+        
+        <View
+            android:layout_width="1dp"
+            android:id="@+id/v_finished"
+            android:layout_height="match_parent"
+            android:background="@color/gray3" />
+
+        <RadioButton
+            android:id="@+id/rb_uploaded"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_checkbox"
+            android:button="@null"
+            android:gravity="center"
+            android:text="已上传"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/gray3" />
+
+        <RadioButton
+            android:id="@+id/rb_unfinsh"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_checkbox"
+            android:button="@null"
+            android:gravity="center"
+            android:text="未完成"
+            android:textSize="14sp" />
+         <View
+            android:layout_width="1dp"
+            android:id="@+id/v_unfinsh"
+            android:layout_height="match_parent"
+            android:background="@color/gray3" />
+
+        <RadioButton
+            android:id="@+id/rb_last"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_checkbox"
+            android:button="@null"
+            android:gravity="center"
+            android:text="最近"
+            android:textSize="14sp" />
+    </RadioGroup>
+
+
+</LinearLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+      
+        android:layout_below="@+id/mappap_toploay" >
+
+        <include layout="@layout/base_baidumap" />
+    </RelativeLayout>
+
+</RelativeLayout>
