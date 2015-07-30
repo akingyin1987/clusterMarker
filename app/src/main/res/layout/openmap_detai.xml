@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/route_bottom_bar_bg"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="105.0dip"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/btn_poidetail_showmap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5.0dip"
+            android:layout_marginRight="8.0dip"
+            android:layout_marginTop="12.0dip"
+            android:background="#00000000"
+            android:drawableLeft="@drawable/mylocation_detail"
+            android:singleLine="true"
+            android:text="详情"
+            android:textColor="#ff008afc"
+            android:textSize="16.0sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5.0dip"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8.0dip"
+                android:layout_marginLeft="5.0dip"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/detai_title"
+                    style="@style/Text.placeListItem_Primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8.0dip"
+                    android:layout_weight="10.0"
+                    android:singleLine="true"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8.0dip"
+                    android:layout_marginLeft="5.0dip"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/detai_info"
+                        style="@style/Text.placeListItem_Second"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5.0dip"
+                        android:layout_weight="1.0"
+                        android:ellipsize="end"
+                        android:maxLines="6"
+                        android:textSize="12sp"
+                    
+                        android:minLines="3" />
+
+                    <LinearLayout
+                        android:id="@+id/openmap_detai_serchlayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            style="@style/Text.placeListItem_Second"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:text="范围（米）：" />
+
+                       <Spinner android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/openmap_detai_scope"
+                                android:spinnerMode="dialog"
+                                android:visibility="gone"
+                                />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="34dp"
+        android:layout_marginBottom="8.0dip"
+        android:orientation="horizontal"
+        android:paddingLeft="6.0dip"
+        android:paddingRight="6.0dip" >
+
+        <Button
+            android:id="@+id/openmap_detai_leftbtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/common_btn_selector"
+            android:text="操作"
+            android:textColor="@color/defaultBtnTextColor"
+            android:textSize="14.0sp" />
+
+        <Button
+            android:id="@+id/openmap_detai_middlebtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/common_btn_selector"
+            android:text="导航"
+            android:textColor="@color/defaultBtnTextColor"
+            android:textSize="14.0sp" />
+
+        <Button
+            android:id="@+id/openmap_detai_rightbtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/common_btn_selector"
+            android:text="关闭"
+            android:textColor="@color/defaultBtnTextColor"
+            android:textSize="14.0sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="@dimen/dialogBase_width"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:background="@drawable/common_alert_bg">
+    
+ 
+    <ImageView android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:padding="10dp"
+               android:id="@+id/alert_dialog_img"
+               android:src="@drawable/icon_ok"/>
+    <TextView android:layout_width="0dp"
+              android:layout_weight="1"
+              android:textSize="15sp"
+              android:layout_height="wrap_content"
+              android:maxLines="5"
+              android:ellipsize="end"
+              android:layout_gravity="center"   
+              android:textColor="#3C3C3C"
+              android:id="@+id/alert_dialog_info"/>
+</LinearLayout>

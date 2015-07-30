@@ -5,4 +5,30 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!-- 按返回键弹出框主题 -->
+    <style name="MyDialogStyle">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <!-- 是否漂浮在Activity上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Text" />
+
+    <style name="Text.placeListItem_Primary" parent="@style/Text">
+        <item name="android:textSize">16.0dip</item>
+        <item name="android:textColor">#ff333333</item>
+    </style>
+
+    <style name="Text.placeListItem_Second" parent="@style/Text">
+        <item name="android:textSize">14.0dip</item>
+        <item name="android:textColor">#ff737373</item>
+    </style>
+
 </resources>

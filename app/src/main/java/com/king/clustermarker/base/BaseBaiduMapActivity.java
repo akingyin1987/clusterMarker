@@ -16,10 +16,13 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
 import com.baidu.mapapi.overlayutil.OverlayManager;
 import com.king.clustermarker.R;
+import com.king.clustermarker.widget.LoadingDialog;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +33,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.Toast;
 
 /**
  * 
@@ -42,6 +46,8 @@ public class BaseBaiduMapActivity extends Activity {
 
 	public MapView mMapView;
 	public BaiduMap mBaidumap = null;
+
+	public LoadingDialog   loadingDialog;
 
 	public MyLocationData locdata = null; // 定位数据
 	public MyLocationConfiguration locConfig = null;
@@ -85,9 +91,36 @@ public class BaseBaiduMapActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		loadingDialog = new LoadingDialog(this);
+		loadingDialog.init();
 
 	}
 
+	public   void  showLoadDialog(String message,boolean  cancel){
+		if(TextUtils.isEmpty(message)){
+			loadingDialog.setText("请等待");
+		}else{
+			loadingDialog.setText(message);
+		}
+		loadingDialog.setCancelable(cancel);
+		if(!loadingDialog.isShowing()){
+
+			loadingDialog.show();
+		}
+	}
+
+
+	public  void  showLoadDialog(String message){
+		showLoadDialog(message, false);
+	}
+
+	public  void   hideDialog(){
+		loadingDialog.dismiss();
+	}
+
+	public  void  showToast(String message){
+		Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+	}
 	@SuppressLint("InflateParams")
 	public void initbaseView(boolean openloc, View mainView) {
 		mMapView = (MapView) mainView.findViewById(R.id.map_content);

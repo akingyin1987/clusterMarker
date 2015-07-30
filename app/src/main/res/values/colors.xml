@@ -313,5 +313,5 @@
 
     <color name="gray3">#cccccc</color>
     <color name="gray2">#eaeaea</color>
-
+    <color name="defaultBtnTextColor">#ff333333</color>
 </resources>
