@@ -135,6 +135,7 @@ public class BaseBaiduMapActivity extends Activity {
 		locationButton = (ImageButton) mainView.findViewById(R.id.loc_follow_compass);
 		countinfo = (TextView) mainView.findViewById(R.id.lnglat_info);
 		cameraButton = (ImageButton) mainView.findViewById(R.id.loc_seeall);
+
 		if (openloc) {
 			locationButton.setOnClickListener(new OnClickListener() {
 

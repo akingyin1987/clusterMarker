@@ -296,7 +296,15 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
             }
         });
 
-        cameraButton.setVisibility(View.GONE);
+        cameraButton.setVisibility(View.VISIBLE);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(null != manager){
+                    manager.zoomToSpan();
+                }
+            }
+        });
 
     }
 
@@ -349,7 +357,7 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
             mPopupBottonWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                 @Override
                 public void onDismiss() {
-                    if (null != mCurrentMarker) {
+                    if (null != mCurrentMarker && null != clusterDescriptor) {
                         mCurrentMarker.setIcon(clusterDescriptor);
                     }
                 }
