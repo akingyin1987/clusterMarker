@@ -503,6 +503,9 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
                  RegionItem   item = new RegionItem(new LatLng(bdModel.bdlat,bdModel.bdlng),"i222",bdModel);
                  regionItemList.add(item);
+             }else if(mapStatusModel == MapStatusModel.LAST && bdModel.isLastOperation()){
+                 RegionItem   item = new RegionItem(new LatLng(bdModel.bdlat,bdModel.bdlng),"i222",bdModel);
+                 regionItemList.add(item);
              }
          }
         countloc = regionItemList.size();
@@ -513,7 +516,10 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
     }
 
     @Override
-    public BitmapDescriptor getBitmapDes(MapStatusModel mapStatusModel) {
+    public BitmapDescriptor getBitmapDes(MapStatusModel mapStatusModel,boolean  islast) {
+        if(islast){
+            return orangeBitmap;
+        }
         switch (mapStatusModel){
             case FINISHED:
 
@@ -532,13 +538,13 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
     @Override
     public void onLoadFinish(int total) {
-        countinfo.setText("定位总数：" + countloc+"    当前显示数:"+total);
+        countinfo.setText("定位总数：" + countloc + "    当前显示数:" + total);
         hideDialog();
     }
 
     @Override
     public void onLoadStart() {
-        System.out.println("onStart");
+       System.out.println("显示");
         showLoadDialog(null);
     }
 

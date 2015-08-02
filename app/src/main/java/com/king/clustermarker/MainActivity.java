@@ -210,7 +210,7 @@ public class MainActivity extends Activity  implements BaiduMap.OnMapLoadedCallb
     }
 
     @Override
-    public BitmapDescriptor getBitmapDes(MapStatusModel mapStatusModel) {
+    public BitmapDescriptor getBitmapDes(MapStatusModel mapStatusModel,boolean islast) {
         return null;
     }
 

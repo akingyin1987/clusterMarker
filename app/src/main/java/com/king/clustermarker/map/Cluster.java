@@ -24,6 +24,19 @@ public class Cluster {
 		return bdModel;
 	}
 
+	private  boolean  islast = false;
+
+	public boolean islast() {
+		if(mClusterItems.size() == 1){
+			return  mClusterItems.get(0).getBdModel().isLastOperation();
+		}
+		return islast;
+	}
+
+	public void setIslast(boolean islast) {
+		this.islast = islast;
+	}
+
 	Cluster(Point point, LatLng latLng) {
 		mPoint = point;
 		mLatLng = latLng;

@@ -17,5 +17,5 @@ public interface ClusterRender {
 	 */
 	public Drawable getDrawAble(int clusterNum);
 
-	public BitmapDescriptor  getBitmapDes(MapStatusModel  mapStatusModel);
+	public BitmapDescriptor  getBitmapDes(MapStatusModel  mapStatusModel,boolean  islast);
 }

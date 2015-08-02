@@ -154,16 +154,22 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
      * 将聚合元素添加至地图上
      */
     private synchronized void addClusterToMap() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                manager.removeAll();
+                manager.removeFromMap();
+                int index = 0;
+                for (Cluster cluster : mClusters) {
+                    addSingleClusterToMap(cluster, index);
+                    index++;
+                }
 
-        manager.removeAll();
-        manager.removeFromMap();
-        int  index = 0;
-        for (Cluster cluster : mClusters) {
-            addSingleClusterToMap(cluster,index);
-            index ++;
-        }
+                manager.addToMap();
+            }
+        });
 
-        manager.addToMap();
+
         //manager.zoomToSpan();
     }
 
@@ -182,8 +188,9 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 
         MarkerOptions markerOptions = new MarkerOptions();
         MapStatusModel   mapStatusModel = null == cluster.getBdModel()?null:cluster.getBdModel().getMapStatus(1);
+
         markerOptions.anchor(0.5f, 0.5f)
-                .icon(getBitmapDes(cluster.getClusterCount(),mapStatusModel)).position(latlng);
+                .icon(getBitmapDes(cluster.getClusterCount(),mapStatusModel,cluster.islast())).position(latlng);
         Bundle  bundle = new Bundle();
         bundle.putInt("index",index);
         markerOptions.extraInfo(bundle);
@@ -197,10 +204,10 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
      */
 
 
-    private BitmapDescriptor getBitmapDes(int num,MapStatusModel mapStatusModel) {
+    private BitmapDescriptor getBitmapDes(int num,MapStatusModel mapStatusModel,boolean  islast) {
 
         if(num == 1){
-            return  mClusterRender.getBitmapDes(mapStatusModel);
+            return  mClusterRender.getBitmapDes(mapStatusModel,islast);
         }
         TextView textView = new TextView(mContext);
 
@@ -226,7 +233,7 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
     private void updateCluster(Cluster cluster) {
         MarkerOptions overlayOptions = (MarkerOptions) cluster.getMoverlayOptions();
         MapStatusModel   mapStatusModel = null == cluster.getBdModel()?null:cluster.getBdModel().getMapStatus(1);
-        overlayOptions.icon(getBitmapDes(cluster.getClusterCount(),mapStatusModel));
+        overlayOptions.icon(getBitmapDes(cluster.getClusterCount(),mapStatusModel,cluster.islast()));
 //        TextOptions   textOptions = (TextOptions)cluster.getMoverlayOptions();
 //        textOptions.text(String.valueOf(cluster.getClusterCount()));
 //        textOptions.fontSize(50);
