@@ -44,6 +44,16 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
     private LatLng centerLatLng;
     private onLoadFinish  mloadFinish;
 
+    private   boolean   seeAll;
+
+    public boolean isSeeAll() {
+        return seeAll;
+    }
+
+    public void setSeeAll(boolean seeAll) {
+        this.seeAll = seeAll;
+    }
+
     public   int      getTotal(){
         return mPoints.size();
     }
@@ -259,14 +269,18 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
             @Override
             public void run() {
                 try {
+                    if(seeAll){
+                        for (ClusterItem clusterItem : mPoints) {
+                            LatLng latlng = clusterItem.getPosition();
 
-                    for (ClusterItem clusterItem : mPoints) {
-                        LatLng latlng = clusterItem.getPosition();
-
-                        if (bounds.contains(latlng)) {
-                            tempPoints.add(clusterItem);
+                            if (bounds.contains(latlng)) {
+                                tempPoints.add(clusterItem);
+                            }
                         }
+                    }else{
+                        tempPoints.addAll(mPoints);
                     }
+
                     int  size = tempPoints.size();
                     for(ClusterItem  clusterItem : tempPoints){
 
@@ -387,20 +401,25 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
     public void onMapStatusChangeFinish(MapStatus mapStatus) {
         //放大缩小完成后对聚合点进行重新计算
         float leveltemp = mapStatus.zoom;
-
         if (leveltemp != level) {
             bounds = mapStatus.bound;
-            assignClusters();
+            if(!seeAll){
+                assignClusters();
+            }
             level = leveltemp;
             centerLatLng = mapStatus.bound.getCenter();
         } else {
             bounds = mapStatus.bound;
             //当缩放等级不变的时候，看中心点是否发生变化
             if (null == centerLatLng) {
-                assignClusters();
+                if(!seeAll){
+                    assignClusters();
+                }
             } else if (centerLatLng.latitude != bounds.getCenter().latitude ||
                     centerLatLng.longitude != bounds.getCenter().longitude) {
-                assignClusters();
+                if(!seeAll){
+                    assignClusters();
+                }
             }
             centerLatLng = bounds.getCenter();
         }

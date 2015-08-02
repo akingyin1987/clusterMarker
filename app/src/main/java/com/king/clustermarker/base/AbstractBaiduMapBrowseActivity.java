@@ -301,12 +301,17 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
             @Override
             public void onClick(View v) {
                 if(null != manager){
-                    manager.zoomToSpan();
+                    clusterOverlay.setSeeAll(true);
+                    //查看所有
+                    ToMarkers(mapStatusModel);
+                  //  manager.zoomToSpan();
                 }
             }
         });
 
     }
+
+
 
     public  BitmapDescriptor    clusterDescriptor;
     public void showPopupBottonWindow(Marker marker,Cluster cluster) {
@@ -330,12 +335,20 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
               clusterDescriptor = ((MarkerOptions) cluster.getMoverlayOptions()).getIcon();
           }
             mCurrentMarker.setIcon(readBitmap);
-            operationButton.setVisibility(View.VISIBLE);
-            closeButton.setVisibility(View.VISIBLE);
+
             infoTextView.setVisibility(View.VISIBLE);
             serchLayout.setVisibility(View.GONE);
             titleTextView.setVisibility(View.VISIBLE);
-            navButton.setVisibility(View.VISIBLE);
+
+            if(cluster.getClusterCount() == 1){
+                operationButton.setVisibility(View.VISIBLE);
+                closeButton.setVisibility(View.VISIBLE);
+                navButton.setVisibility(View.VISIBLE);
+            }else{
+                operationButton.setVisibility(View.GONE);
+                closeButton.setVisibility(View.GONE);
+                navButton.setVisibility(View.GONE);
+            }
             if (null != mBaidumap.getLocationData()) {
                 LatLng ll = new LatLng(mBaidumap.getLocationData().latitude, mBaidumap.getLocationData().longitude);
                 titleTextView.setText("距当前位置：" + String.format("%.2f", DistanceUtil.getDistance(ll, marker.getPosition())) + "(米)");
@@ -540,6 +553,10 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
     public void onLoadFinish(int total) {
         countinfo.setText("定位总数：" + countloc + "    当前显示数:" + total);
         hideDialog();
+        if(clusterOverlay.isSeeAll()){
+            manager.zoomToSpan();
+        }
+
     }
 
     @Override
