@@ -152,7 +152,6 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
         @Override
         public void handleMessage(Message msg) {
-
             super.handleMessage(msg);
             if (msg.what == 1) {
                 loadData = true;
@@ -161,29 +160,24 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
                     mBaidumap.setOnMarkerClickListener(manager);
                     manager.addToMap();
                 }
-
                 manager.removeFromMap();
                 manager.removeAll();
                 if(null != clusterOverlay){
                     clusterOverlay.addAllClusterItems(regionItemList);
                     clusterOverlay.assignClusters();
-
                 }
                 countloc = regionItemList.size();
-
-
             } else if (msg.what == -1) {
                 hideDialog();
                 finish();
                 showToast("初始化数据出错了！");
             } else if (msg.what == 2) {
-
                 hideDialog();
-
-
-
             } else if (msg.what == 3) {
                 showToast("当前位置无法获取，距离条件无效");
+            }else if(msg.what == 4){
+                countinfo.setText("定位总数：" + countloc + "    当前显示数:" + msg.arg1);
+                hideDialog();
             }
         }
 
@@ -551,11 +545,12 @@ public abstract class AbstractBaiduMapBrowseActivity extends BaseBaiduMapActivit
 
     @Override
     public void onLoadFinish(int total) {
-        countinfo.setText("定位总数：" + countloc + "    当前显示数:" + total);
-        hideDialog();
-        if(clusterOverlay.isSeeAll()){
-            manager.zoomToSpan();
-        }
+        Message  msg = initDataHandler.obtainMessage();
+        msg.what = 4;
+        msg.arg1 = total;
+        initDataHandler.sendMessage(msg);
+
+
 
     }
 

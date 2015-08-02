@@ -71,9 +71,7 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 
             System.out.println("加载到MAP");
             addClusterToMap();
-            if(null != mloadFinish){
-                mloadFinish.onLoadFinish(tempPoints.size());
-            }
+
         }
     };
 
@@ -176,6 +174,12 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
                 }
 
                 manager.addToMap();
+                if(isSeeAll()){
+                    manager.zoomToSpan();
+                }
+                if(null != mloadFinish){
+                    mloadFinish.onLoadFinish(tempPoints.size());
+                }
             }
         });
 
@@ -269,7 +273,7 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
             @Override
             public void run() {
                 try {
-                    if(seeAll){
+                    if(!seeAll){
                         for (ClusterItem clusterItem : mPoints) {
                             LatLng latlng = clusterItem.getPosition();
 
@@ -286,7 +290,7 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
 
                             LatLng latlng = clusterItem.getPosition();
                             Point point = mProjection.toScreenLocation(latlng);
-                            if(size >300){
+                            if(size >300 ||level < 17){
 
                                 Cluster cluster = getCluster(point);
                                 if (cluster != null) {
@@ -423,6 +427,7 @@ public class ClusterOverlay implements BaiduMap.OnMapStatusChangeListener,
             }
             centerLatLng = bounds.getCenter();
         }
+        setSeeAll(false);
     }
 
 
