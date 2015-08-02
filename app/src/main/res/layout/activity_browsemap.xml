@@ -106,8 +106,7 @@
       
         android:layout_below="@+id/mappap_toploay" >
 
-        <include layout="@layout/base_baidumap"
-            android:id="@+id/" />
+        <include layout="@layout/base_baidumap" />
     </RelativeLayout>
 
 </RelativeLayout>
